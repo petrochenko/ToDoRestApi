@@ -79,8 +79,6 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = null;
   }
 
-  console.log(body);
-
   Todo
     .findByIdAndUpdate(id, {$set: body}, {new: true})
     .then((todo) => {
@@ -91,7 +89,6 @@ app.patch('/todos/:id', (req, res) => {
     }).catch((error) => {
     res.status(400).send(error);
   });
-
 });
 
 if (!module.parent) {
