@@ -12,7 +12,7 @@ let UserSchema = new mongoose.Schema({
     trim: true,
     unique: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return validator.isEmail(v);
       },
       message: '{VALUE} is not a valid email'
@@ -49,6 +49,22 @@ UserSchema.methods.generateAuthToken = function () {
 
   user.tokens.push({access, token});
   return user.save().then(() => token);
+};
+
+UserSchema.statics.findByToken = function (token) {
+  let User = this;
+  let decoded;
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (err) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    _id: decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
 };
 
 let User = mongoose.model('User', UserSchema);
